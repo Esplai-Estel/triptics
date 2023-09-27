@@ -30,8 +30,8 @@ jobs:
                 filename_noext="${filename%.*}"
                 
                 # Convert the image to PNG and rename it
-                convert "$image" "$folder/$filename_noext.png"
-                echo "Converted and renamed: $image to $folder/$filename_noext.png"
+                convert "$image" "$folder/$folder.png"
+                echo "Converted and renamed: $image to $folder/$folder.png"
               fi
             fi
           done
