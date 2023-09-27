@@ -15,23 +15,34 @@ jobs:
 
     - name: Set up ImageMagick
       run: sudo apt-get update && sudo apt-get install -y imagemagick
-
+    
     - name: Convert and Rename Images
       run: |
+        committed_image="$(
+          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | 
+          grep -E '\.(jpg|jpeg|JPG|JPEG)$' |
+          head -n 1
+        )"
+
+        if [ -z "$committed_image" ]; then
+          echo "No image files found in the commit."
+          exit 0
+        fi
+
         for folder in follets espurnes barrufets picasoques exploradors vigies; do
-          echo "Converting and renaming images in folder: $folder"
-          for image in ./$folder/*; do
-            if [ -f "$image" ]; then
-              # Check if the file is an image (e.g., with jpg or jpeg extension)
-              if [[ "$image" =~ \.(jpg|jpeg|JPG|JPEG|png|PNG)$ ]]; then
-                # Extract the file name and extension
-                filename=$(basename "$image")
-                extension="${filename##*.}"
-                filename_noext="${filename%.*}"
+          if [ -f "$folder/$committed_image" ]; then
+                
+                # Temporarily move the image to a different location
+                mv "$committed_image" /tmp
+
+                # Remove all other image files in the folder
+                rm ./$folder/*.{jpg,jpeg,JPG,JPEG} 2> /dev/null
                 
                 # Convert the image to PNG and rename it
-                convert "$image" "$folder/$folder.png"
+                convert "/tmp/$committed_image" "$folder/$folder.png"
                 echo "Converted and renamed: $image to $folder/$folder.png"
+                rm "/tmp/$committed_image"
+                echo "Removed old $committed_image"
               fi
             fi
           done
@@ -45,8 +56,3 @@ jobs:
         git commit -m "Converted and renamed images"
         git push
       shell: bash
-
-    - name: Publish Results
-      run: |
-        # Optionally, you can publish the converted images or artifacts to another location (e.g., release assets or an S3 bucket).
-        echo "Publishing the converted images..."
