@@ -23,7 +23,7 @@ jobs:
           for image in ./$folder/*; do
             if [ -f "$image" ]; then
               # Check if the file is an image (e.g., with jpg or jpeg extension)
-              if [[ "$image" =~ \.(jpg|jpeg|JPG|JPEG)$ ]]; then
+              if [[ "$image" =~ \.(jpg|jpeg|JPG|JPEG|png|PNG)$ ]]; then
                 # Extract the file name and extension
                 filename=$(basename "$image")
                 extension="${filename##*.}"
