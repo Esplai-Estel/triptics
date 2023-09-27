@@ -1,0 +1,49 @@
+name: Image Conversion
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  convert_and_rename_images:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up ImageMagick
+      run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+    - name: Convert and Rename Images
+      run: |
+        for folder in follets espurnes barrufets picasoques exploradors vigies; do
+          for image in ./$folder/*; do
+            if [ -f "$image" ]; then
+              # Check if the file is an image (e.g., with jpg or jpeg extension)
+              if [[ "$image" =~ \.(jpg|jpeg|JPG|JPEG)$ ]]; then
+                # Extract the file name and extension
+                filename=$(basename "$image")
+                extension="${filename##*.}"
+                filename_noext="${filename%.*}"
+                
+                # Convert the image to PNG and rename it
+                convert "$image" "$folder/$filename_noext.png"
+              fi
+            fi
+          done
+        done
+
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Converted and renamed images"
+        git push
+
+    - name: Publish Results
+      run: |
+        # Optionally, you can publish the converted images or artifacts to another location (e.g., release assets or an S3 bucket).
+        echo "Publishing the converted images..."
