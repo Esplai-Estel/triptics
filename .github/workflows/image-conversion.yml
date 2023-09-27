@@ -15,12 +15,15 @@ jobs:
 
     - name: Set up ImageMagick
       run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+    - name: Print GitHub SHA
+      run: echo "GitHub SHA: ${{ github.sha }}"
     
     - name: Convert and Rename Images
       run: |
         committed_image="$(
-          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | 
-          grep -E '\.(jpg|jpeg|JPG|JPEG)$' |
+          git diff-tree --no-commit-id --name-only ${{ github.sha }} | 
+          grep -E '\.(jpg|jpeg|JPG|JPEG|PNG|png)$' |
           head -n 1
         )"
 
@@ -36,7 +39,7 @@ jobs:
                 mv "$committed_image" /tmp
 
                 # Remove all other image files in the folder
-                rm ./$folder/*.{jpg,jpeg,JPG,JPEG} 2> /dev/null
+                rm ./$folder/*.{jpg,jpeg,JPG,JPEG,PNG,png} 2> /dev/null
                 
                 # Convert the image to PNG and rename it
                 convert "/tmp/$committed_image" "$folder/$folder.png"
