@@ -19,6 +19,7 @@ jobs:
     - name: Convert and Rename Images
       run: |
         for folder in follets espurnes barrufets picasoques exploradors vigies; do
+          echo "Converting and renaming images in folder: $folder"
           for image in ./$folder/*; do
             if [ -f "$image" ]; then
               # Check if the file is an image (e.g., with jpg or jpeg extension)
@@ -30,6 +31,7 @@ jobs:
                 
                 # Convert the image to PNG and rename it
                 convert "$image" "$folder/$filename_noext.png"
+                echo "Converted and renamed: $image to $folder/$filename_noext.png"
               fi
             fi
           done
@@ -42,6 +44,7 @@ jobs:
         git add .
         git commit -m "Converted and renamed images"
         git push
+      shell: bash
 
     - name: Publish Results
       run: |
