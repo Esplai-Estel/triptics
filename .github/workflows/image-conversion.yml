@@ -23,13 +23,13 @@ jobs:
       run: |
         echo "Branch: ${{ env.branch }}"
         echo "Sha: ${{ env.sha_short }}"
+        echo $(git diff-tree --no-commit-id --name-only ${{ env.sha_short }})
 
     - name: Set up ImageMagick
       run: sudo apt-get update && sudo apt-get install -y imagemagick
     
     - name: Convert and Rename Images
       run: |
-        echo "git diff-tree --no-commit-id --name-only ${{ env.sha_short }}"
         committed_image="$(
           git diff-tree --no-commit-id --name-only ${{ env.sha_short }} | 
           grep -E '\.(jpg|jpeg|JPG|JPEG|PNG|png)$' |
