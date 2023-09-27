@@ -29,6 +29,7 @@ jobs:
     
     - name: Convert and Rename Images
       run: |
+        echo "git diff-tree --no-commit-id --name-only ${{ env.sha_short }}"
         committed_image="$(
           git diff-tree --no-commit-id --name-only ${{ env.sha_short }} | 
           grep -E '\.(jpg|jpeg|JPG|JPEG|PNG|png)$' |
@@ -36,7 +37,7 @@ jobs:
         )"
 
         if [ -z "$committed_image" ]; then
-          echo "No image files found in the commit."
+          echo "No image files found in the commit ${{ env.sha_short }}."
           exit 0
         fi
 
